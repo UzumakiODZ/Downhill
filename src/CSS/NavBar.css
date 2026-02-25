@@ -1,0 +1,49 @@
+.navBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 50px;
+  background-color: #111;
+  color: white;
+}
+
+/* Logo */
+.navBar h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+/* Menu List */
+.navBar ul {
+  list-style: none;
+  display: flex;
+  gap: 35px;
+  margin: 0;
+  padding: 0;
+}
+
+/* Menu Items */
+.navBar li {
+  font-size: 17px;
+  font-weight: 500;
+}
+
+/* Links */
+.navBar a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+/* Hover Effect */
+.navBar a:hover {
+  color: #00e5ff;
+}
