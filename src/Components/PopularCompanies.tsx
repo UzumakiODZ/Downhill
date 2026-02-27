@@ -1,6 +1,6 @@
+
 import { useRef } from "react";
 import CompanyCard from "./CompanyCard";
-import "../CSS/PopularCompanies.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
@@ -11,7 +11,6 @@ interface Company {
   type: "Product Based" | "Service Based";
   logo: string;
 }
-
 const companies: Company[] = [
   {
     id: 1,
@@ -99,14 +98,14 @@ const companies: Company[] = [
   },
 ];
 
+// ... (companies array remains the same)
+
 const PopularCompanies = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
-
     const scrollAmount = 350;
-
     scrollRef.current.scrollBy({
       left: direction === "left" ? -scrollAmount : scrollAmount,
       behavior: "smooth",
@@ -114,21 +113,39 @@ const PopularCompanies = () => {
   };
 
   return (
-    <div className="popularSection">
-      <h2 className="sectionTitle">Popular Companies</h2>
+    <div className="mb-[60px]">
+      <h2 className="text-2xl font-semibold m-2.5 text-white">
+        Popular Companies
+      </h2>
 
-      <div className="scrollWrapper">
-        <button className="arrowBtn" onClick={() => scroll("left")}>
+      <div className="flex items-center gap-[15px]">
+        {/* Left Arrow */}
+        <button 
+          className="hidden md:block bg-[#1e1e1e] border border-[#2a2a2a] text-white p-3 rounded-xl cursor-pointer transition-all duration-300 hover:border-[#00e5ff] hover:text-[#00e5ff] hover:scale-105 active:scale-95 shrink-0"
+          onClick={() => scroll("left")}
+        >
           <FontAwesomeIcon icon={faChevronLeft} />
         </button>
 
-        <div className="companyScroll" ref={scrollRef}>
-          {companies.map((company) => (
-            <CompanyCard key={company.id} {...company} />
+        {/* Scroll Container */}
+        <div 
+          className="flex gap-[15px] overflow-x-auto overflow-y-visible scroll-smooth py-[15px] flex-1 no-scrollbar selection:bg-transparent" 
+          ref={scrollRef}
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} // Support for Firefox/IE
+        >
+          {companies.map((company, index) => (
+            // Added a wrapper to ensure cards don't shrink
+            <div key={`${company.id}-${index}`} className="flex-shrink-0">
+              <CompanyCard {...company} />
+            </div>
           ))}
         </div>
 
-        <button className="arrowBtn" onClick={() => scroll("right")}>
+        {/* Right Arrow */}
+        <button 
+          className="hidden md:block bg-[#1e1e1e] border border-[#2a2a2a] text-white p-3 rounded-xl cursor-pointer transition-all duration-300 hover:border-[#00e5ff] hover:text-[#00e5ff] hover:scale-105 active:scale-95 shrink-0"
+          onClick={() => scroll("right")}
+        >
           <FontAwesomeIcon icon={faChevronRight} />
         </button>
       </div>
