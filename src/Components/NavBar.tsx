@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,6 +9,7 @@ import {
   faBars,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
+import { useTextMeasure, truncateIfNeeded } from "../hooks/useTextMeasure";
 
 const NavBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -27,15 +28,41 @@ const NavBar = () => {
     { to: "/placement-stats", label: "Placement & Stats", icon: faChartColumn },
   ];
 
+  // Measure each nav label at top level (hooks must be at top level)
+  const homeMeasure = useTextMeasure("Home", {
+    font: '600 14px Inter',
+    maxWidth: 140,
+    lineHeight: 16,
+  });
+
+  const discussionMeasure = useTextMeasure("Discussion", {
+    font: '600 14px Inter',
+    maxWidth: 140,
+    lineHeight: 16,
+  });
+
+  const placementMeasure = useTextMeasure("Placement & Stats", {
+    font: '600 14px Inter',
+    maxWidth: 140,
+    lineHeight: 16,
+  });
+
+  // Build display labels after measurements
+  const displayLabels = useMemo(() => [
+    homeMeasure.canFit ? "Home" : truncateIfNeeded("Home", 10),
+    discussionMeasure.canFit ? "Discussion" : truncateIfNeeded("Discussion", 10),
+    placementMeasure.canFit ? "Placement & Stats" : truncateIfNeeded("Placement & Stats", 12),
+  ], [homeMeasure.canFit, discussionMeasure.canFit, placementMeasure.canFit]);
+
   return (
     <nav 
-      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 ${
+      className={`sticky top-0 left-0 w-full z-[100] transition-all duration-500 ${
         scrolled 
           ? "bg-[#121212]/80 backdrop-blur-xl py-4 shadow-2xl border-b border-white/5" 
           : "bg-[#121212] py-6 border-b border-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-[60px] flex justify-between items-center">
+      <div className="max-w-8xl mx-auto px-6 md:px-[60px] flex justify-between items-center">
         
         {/* Logo Section */}
         <Link to="/" className="flex items-center gap-3 group">
@@ -50,18 +77,19 @@ const NavBar = () => {
 
         {/* Desktop Navigation */}
         <ul className="hidden md:flex items-center gap-10">
-          {navLinks.map((link) => {
+          {navLinks.map((link, idx) => {
             const isActive = location.pathname === link.to;
             return (
               <li key={link.to} className="relative">
                 <Link
                   to={link.to}
+                  title={link.label}
                   className={`flex items-center gap-2.5 text-sm font-semibold tracking-wide transition-all duration-300 hover:text-[#00e5ff] ${
                     isActive ? "text-[#00e5ff]" : "text-[#888]"
                   }`}
                 >
                   <FontAwesomeIcon icon={link.icon} className="text-[12px]" />
-                  {link.label}
+                  {displayLabels[idx]}
                 </Link>
                 {/* Active Indicator Underline */}
                 {isActive && (

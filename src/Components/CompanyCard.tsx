@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { useTextMeasure, truncateIfNeeded } from "../hooks/useTextMeasure";
 
 interface CompanyCardProps {
   name: string;
@@ -8,6 +9,18 @@ interface CompanyCardProps {
 }
 
 const CompanyCard = ({ name, experiences, type, logo }: CompanyCardProps) => {
+  // Measure company name for overflow detection
+  const nameMeasure = useTextMeasure(name, {
+    font: 'bold 18px Inter',
+    maxWidth: 170,
+    lineHeight: 24,
+  });
+
+  const displayName = useMemo(
+    () => (nameMeasure.canFit ? name : truncateIfNeeded(name, 16)),
+    [name, nameMeasure.canFit]
+  );
+
   // Dynamic color styling based on company type
   const isProductBased = type === "Product Based";
   const typeStyles = isProductBased
@@ -28,8 +41,11 @@ const CompanyCard = ({ name, experiences, type, logo }: CompanyCardProps) => {
       </div>
 
       {/* Company Name */}
-      <h3 className="text-lg font-bold text-white tracking-wide transition-colors group-hover:text-[#00e5ff]">
-        {name}
+      <h3 
+        className="text-lg font-bold text-white tracking-wide transition-colors group-hover:text-[#00e5ff]"
+        title={name}
+      >
+        {displayName}
       </h3>
 
       {/* Type Badge */}
