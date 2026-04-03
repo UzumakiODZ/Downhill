@@ -108,14 +108,14 @@ const PlacementStats = () => {
 
     fetchData();
     return () => controller.abort(); // Cancel request if component unmounts or deps change
-  }, [page, filters]);
+  }, [page, filters, hasMore]);
 
   // Derived Data
   const uniqueCompanies = useMemo(() => ["All", ...new Set(experiences.map((e) => e.company))], [experiences]);
   const uniqueRoles = useMemo(() => ["All", ...new Set(experiences.map((e) => e.role))], [experiences]);
 
   // Dropdown UI Helper
-  const Dropdown = ({ label, value, options, type }: { label: string, value: any, options: any[], type: string }) => (
+  const Dropdown = ({ label, value, options, type }: { label: string; value: string | number; options: (string | number)[]; type: string }) => (
     <div className="relative">
       <button
         onClick={() => setOpenDropdown(openDropdown === type ? null : type)}
@@ -125,10 +125,16 @@ const PlacementStats = () => {
       </button>
       {openDropdown === type && (
         <ul className="absolute top-[115%] left-0 w-full md:min-w-[180px] bg-[#1e1e1e] border border-[#2a2a2a] rounded-xl shadow-2xl z-50 py-2 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-          {options.map((opt) => (
+          {options.map((opt: string | number) => (
             <li 
               key={opt} 
-              onClick={() => { setFilters(f => ({ ...f, [type]: opt })); setOpenDropdown(null); }}
+              onClick={() => {
+                if (type === "company") setFilters(f => ({ ...f, company: opt as string }));
+                else if (type === "role") setFilters(f => ({ ...f, role: opt as string }));
+                else if (type === "year") setFilters(f => ({ ...f, year: opt as any }));
+                else if (type === "sort") setFilters(f => ({ ...f, sort: opt as "newest" | "oldest" }));
+                setOpenDropdown(null);
+              }}
               className={`px-4 py-2.5 text-sm cursor-pointer transition-colors hover:bg-[#2a2a2a] ${value === opt ? "text-[#00e5ff] bg-[#00e5ff]/5" : "text-[#ccc]"}`}
             >
               {opt === "newest" ? "Newest First" : opt === "oldest" ? "Oldest First" : opt}
