@@ -6,7 +6,7 @@ const App = () => {
       <h1 className="text-4xl md:text-5xl font-bold mb-4">
         Welcome to Downhill
       </h1>
-      <p className="text-lg md:text-xl text-gray-300 max-w-2xl">
+      <p className="text-lg md:text-xl text-[#aaa] max-w-2xl">
         Your one-stop platform for placement experiences and discussions.
       </p>
     </div>
