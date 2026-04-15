@@ -1,8 +1,7 @@
-
-import { useRef } from "react";
-import CompanyCard from "./CompanyCard";
+import { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import CompanyCard from "./CompanyCard";
 
 interface Company {
   id: number;
@@ -11,142 +10,74 @@ interface Company {
   type: "Product Based" | "Service Based";
   logo: string;
 }
-const companies: Company[] = [
-  {
-    id: 1,
-    name: "Amazon",
-    experiences: 51,
-    type: "Product Based",
-    logo: "https://logo.clearbit.com/amazon.com",
-  },
-  {
-    id: 2,
-    name: "Microsoft",
-    experiences: 30,
-    type: "Product Based",
-    logo: "https://logo.clearbit.com/microsoft.com",
-  },
-  {
-    id: 3,
-    name: "Google",
-    experiences: 21,
-    type: "Product Based",
-    logo: "https://logo.clearbit.com/google.com",
-  },
-  {
-    id: 4,
-    name: "Uber",
-    experiences: 11,
-    type: "Product Based",
-    logo: "https://logo.clearbit.com/uber.com",
-  },
-  {
-    id: 1,
-    name: "Amazon",
-    experiences: 51,
-    type: "Product Based",
-    logo: "https://logo.clearbit.com/amazon.com",
-  },
-  {
-    id: 2,
-    name: "Microsoft",
-    experiences: 30,
-    type: "Product Based",
-    logo: "https://logo.clearbit.com/microsoft.com",
-  },
-  {
-    id: 3,
-    name: "Google",
-    experiences: 21,
-    type: "Product Based",
-    logo: "https://logo.clearbit.com/google.com",
-  },
-  {
-    id: 4,
-    name: "Uber",
-    experiences: 11,
-    type: "Product Based",
-    logo: "https://logo.clearbit.com/uber.com",
-  },
-  {
-    id: 1,
-    name: "Amazon",
-    experiences: 51,
-    type: "Product Based",
-    logo: "https://logo.clearbit.com/amazon.com",
-  },
-  {
-    id: 2,
-    name: "Microsoft",
-    experiences: 30,
-    type: "Product Based",
-    logo: "https://logo.clearbit.com/microsoft.com",
-  },
-  {
-    id: 3,
-    name: "Google",
-    experiences: 21,
-    type: "Product Based",
-    logo: "https://logo.clearbit.com/google.com",
-  },
-  {
-    id: 4,
-    name: "Uber",
-    experiences: 11,
-    type: "Product Based",
-    logo: "https://logo.clearbit.com/uber.com",
-  },
+
+const baseCompanies: Company[] = [
+  { id: 1, name: "Amazon",    experiences: 51, type: "Product Based", logo: "https://logo.clearbit.com/amazon.com"    },
+  { id: 2, name: "Microsoft", experiences: 30, type: "Product Based", logo: "https://logo.clearbit.com/microsoft.com" },
+  { id: 3, name: "Google",    experiences: 21, type: "Product Based", logo: "https://logo.clearbit.com/google.com"    },
+  { id: 4, name: "Uber",      experiences: 11, type: "Product Based", logo: "https://logo.clearbit.com/uber.com"      },
 ];
 
-// ... (companies array remains the same)
+// Card width (200px) + gap (16px from gap-4)
+const CARD_WIDTH = 216;
 
 const PopularCompanies = () => {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  // offsetX is the rendered left-shift in pixels, managed via state.
+  const offsetRef = useRef(0);
+  const [offsetX, setOffsetX] = useState(0);
 
-  const scroll = (direction: "left" | "right") => {
-    if (!scrollRef.current) return;
-    const scrollAmount = 350;
-    scrollRef.current.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
-      behavior: "smooth",
-    });
+  // Total width of ONE copy of the list; we wrap at this boundary so the
+  // 3-copy array always gives us a card on screen both sides of the seam.
+  const totalSingleWidth = baseCompanies.length * CARD_WIDTH;
+
+
+
+  const handleArrow = (direction: "left" | "right") => {
+    const delta = direction === "right" ? CARD_WIDTH : -CARD_WIDTH;
+    offsetRef.current += delta;
+    // Keep within [0, totalSingleWidth) to maintain seamless loop invariant
+    if (offsetRef.current < 0) offsetRef.current += totalSingleWidth;
+    if (offsetRef.current >= totalSingleWidth) offsetRef.current -= totalSingleWidth;
+    setOffsetX(offsetRef.current);
   };
+
+  // 3 copies so there is always a full screen of cards available on both sides
+  const displayCompanies = [...baseCompanies, ...baseCompanies, ...baseCompanies];
 
   return (
     <div className="mb-[60px]">
-      <h2 className="text-2xl font-semibold m-2.5 text-white">
-        Popular Companies
-      </h2>
+      <h2 className="text-2xl font-semibold mb-6 text-white">Popular Companies</h2>
 
-      <div className="flex items-center gap-[15px]">
-        {/* Left Arrow */}
-        <button 
-          className="hidden md:block bg-[#1e1e1e] border border-[#2a2a2a] text-white p-3 rounded-xl cursor-pointer transition-all duration-300 hover:border-[#00e5ff] hover:text-[#00e5ff] hover:scale-105 active:scale-95 shrink-0"
-          onClick={() => scroll("left")}
-        >
-          <FontAwesomeIcon icon={faChevronLeft} />
-        </button>
-
-        {/* Scroll Container */}
-        <div 
-          className="flex gap-[15px] overflow-x-auto overflow-y-visible scroll-smooth py-[15px] flex-1 no-scrollbar selection:bg-transparent" 
-          ref={scrollRef}
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} // Support for Firefox/IE
-        >
-          {companies.map((company, index) => (
-            // Added a wrapper to ensure cards don't shrink
-            <div key={`${company.id}-${index}`} className="flex-shrink-0">
-              <CompanyCard {...company} />
-            </div>
-          ))}
+      <div className="relative group w-full">
+        <div className="overflow-visible rounded-xl">
+          <div
+            className="flex gap-4"
+            style={{
+              transform: `translateX(-${offsetX}px)`,
+              willChange: "transform",
+              transition: "transform 0.3s ease-out",
+            }}
+          >
+            {displayCompanies.map((company, index) => (
+              <div key={`${company.id}-${index}`} className="flex-shrink-0">
+                <CompanyCard {...company} />
+              </div>
+            ))}
+          </div>
         </div>
-
-        {/* Right Arrow */}
-        <button 
-          className="hidden md:block bg-[#1e1e1e] border border-[#2a2a2a] text-white p-3 rounded-xl cursor-pointer transition-all duration-300 hover:border-[#00e5ff] hover:text-[#00e5ff] hover:scale-105 active:scale-95 shrink-0"
-          onClick={() => scroll("right")}
+        <button
+          onClick={() => handleArrow("left")}
+          aria-label="Scroll left"
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-40 bg-[#00e5ff]/20 hover:bg-[#00e5ff]/40 text-[#00e5ff] p-3 rounded-full transition-all duration-200 backdrop-blur-sm border border-[#00e5ff]/30 opacity-0 group-hover:opacity-100 focus:opacity-100"
         >
-          <FontAwesomeIcon icon={faChevronRight} />
+          <FontAwesomeIcon icon={faChevronLeft} className="text-lg" />
+        </button>
+        <button
+          onClick={() => handleArrow("right")}
+          aria-label="Scroll right"
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-40 bg-[#00e5ff]/20 hover:bg-[#00e5ff]/40 text-[#00e5ff] p-3 rounded-full transition-all duration-200 backdrop-blur-sm border border-[#00e5ff]/30 opacity-0 group-hover:opacity-100 focus:opacity-100"
+        >
+          <FontAwesomeIcon icon={faChevronRight} className="text-lg" />
         </button>
       </div>
     </div>

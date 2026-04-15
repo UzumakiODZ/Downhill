@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHillAvalanche,
   faHouse,
-  faComments,
   faChartColumn,
   faBars,
   faXmark,
@@ -24,7 +23,7 @@ const NavBar = () => {
 
   const navLinks = [
     { to: "/", label: "Home", icon: faHouse },
-    { to: "/discussion", label: "Discussion", icon: faComments },
+    // { to: "/discussion", label: "Discussion", icon: faComments },
     { to: "/placement-stats", label: "Placement & Stats", icon: faChartColumn },
   ];
 
@@ -35,11 +34,11 @@ const NavBar = () => {
     lineHeight: 16,
   });
 
-  const discussionMeasure = useTextMeasure("Discussion", {
-    font: '600 14px Inter',
-    maxWidth: 140,
-    lineHeight: 16,
-  });
+  // const discussionMeasure = useTextMeasure("Discussion", {
+  //   font: '600 14px Inter',
+  //   maxWidth: 140,
+  //   lineHeight: 16,
+  // });
 
   const placementMeasure = useTextMeasure("Placement & Stats", {
     font: '600 14px Inter',
@@ -50,9 +49,9 @@ const NavBar = () => {
   // Build display labels after measurements
   const displayLabels = useMemo(() => [
     homeMeasure.canFit ? "Home" : truncateIfNeeded("Home", 10),
-    discussionMeasure.canFit ? "Discussion" : truncateIfNeeded("Discussion", 10),
+    // discussionMeasure.canFit ? "Discussion" : truncateIfNeeded("Discussion", 10),
     placementMeasure.canFit ? "Placement & Stats" : truncateIfNeeded("Placement & Stats", 12),
-  ], [homeMeasure.canFit, discussionMeasure.canFit, placementMeasure.canFit]);
+  ], [homeMeasure.canFit, placementMeasure.canFit]);
 
   return (
     <nav 
