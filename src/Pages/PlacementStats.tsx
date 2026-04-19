@@ -1,6 +1,19 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import ExperienceCard from "../Components/ExperienceCard";
-import PopularCompanies from "../Components/PopularCompanies.tsx";
+import {gql} from "@apollo/client";
+import ExperienceCard from "../components/ExperienceCard.tsx";
+import PopularCompanies from "../components/PopularCompanies.tsx";
+
+const GET_POSTS = gql`
+  query GetPost(){
+    posts{
+      id
+      Title
+      Content
+      }
+  }
+`;
+
+
 
 interface Experience {
   id: number;
@@ -34,7 +47,7 @@ const PlacementStats = () => {
 
   const availableYears = useMemo(() => {
     const currentYear = new Date().getFullYear();
-    return Array.from({ length: 6 }, (_, i) => currentYear - i);
+    return Array.from({ length: 2 }, (_, i) => currentYear - i);
   }, []);
 
   // Intersection Observer Logic
