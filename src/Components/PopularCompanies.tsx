@@ -15,6 +15,51 @@ interface Company {
 // Card width (200px) + gap (16px from gap-4)
 const CARD_WIDTH = 216;
 
+const baseCompanies: Company[] = [
+  {
+    id: 1,
+    name: "Google",
+    experiences: 234,
+    type: "Product Based",
+    logo: "https://via.placeholder.com/200x100?text=Google",
+  },
+  {
+    id: 2,
+    name: "Amazon",
+    experiences: 189,
+    type: "Product Based",
+    logo: "https://via.placeholder.com/200x100?text=Amazon",
+  },
+  {
+    id: 3,
+    name: "Microsoft",
+    experiences: 176,
+    type: "Product Based",
+    logo: "https://via.placeholder.com/200x100?text=Microsoft",
+  },
+  {
+    id: 4,
+    name: "Apple",
+    experiences: 145,
+    type: "Product Based",
+    logo: "https://via.placeholder.com/200x100?text=Apple",
+  },
+  {
+    id: 5,
+    name: "Meta",
+    experiences: 128,
+    type: "Product Based",
+    logo: "https://via.placeholder.com/200x100?text=Meta",
+  },
+  {
+    id: 6,
+    name: "Accenture",
+    experiences: 156,
+    type: "Service Based",
+    logo: "https://via.placeholder.com/200x100?text=Accenture",
+  },
+];
+
 
 const PopularCompanies = () => {
   const navigate = useNavigate();
@@ -39,7 +84,7 @@ const PopularCompanies = () => {
   };
 
   // 3 copies so there is always a full screen of cards available on both sides
-  const displayCompanies = [];
+  const displayCompanies = [...baseCompanies, ...baseCompanies, ...baseCompanies];
 
 
 
