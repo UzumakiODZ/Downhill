@@ -4,13 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircle,
   faSearch,
-  faExclamationTriangle,
   faBriefcase,
   faBuilding,
   faCalendar,
   faSliders,
   faXmark,
-  faRotateRight,
 } from "@fortawesome/free-solid-svg-icons";
 import ExperienceCard from "../Components/ExperienceCard";
 import PopularCompanies from "../Components/PopularCompanies";
@@ -167,12 +165,6 @@ const PlacementStats = () => {
   const [loading, setLoading] = useState(false);
   const [totalCount, setTotalCount] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  /*
-   * fetchTrigger lets the Retry button force a re-fetch without touching
-   * filters or page (which might not have changed, so useEffect wouldn't fire).
-   */
-  const [fetchTrigger, setFetchTrigger] = useState(0);
 
   // ── Aggregate stats (separate API call — not derived from paginated list) ─
   /*
@@ -362,7 +354,7 @@ const PlacementStats = () => {
 
     fetchData();
     return () => controller.abort();
-  }, [page, filters, advancedFilters, debouncedSearch, fetchTrigger]);
+  }, [page, filters, advancedFilters, debouncedSearch]);
 
   // ── Close dropdowns on outside click ─────────────────────────────────────
   useEffect(() => {
@@ -379,17 +371,6 @@ const PlacementStats = () => {
 
   const handleFilterChange = useCallback((type: string, value: string | number) => {
     setFilters((f) => ({ ...f, [type]: value }));
-  }, []);
-
-  const retryFetch = useCallback(() => {
-    setError(null);
-    setExperiences([]);
-    setPage(1);
-    setHasMore(true);
-    hasMoreRef.current = true;
-    // Increment fetchTrigger to force the fetch effect to re-run even if
-    // page was already 1 (same state value → no re-run without the trigger).
-    setFetchTrigger((t) => t + 1);
   }, []);
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -428,23 +409,6 @@ const PlacementStats = () => {
           </>
         )}
       </div>
-
-      {/* Error Alert — with Retry button so the user isn't permanently stuck */}
-      {error && (
-        <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-400 shrink-0" />
-            <span className="text-red-300 text-sm truncate">{error}</span>
-          </div>
-          <button
-            onClick={retryFetch}
-            className="flex items-center gap-2 text-sm text-red-300 hover:text-white border border-red-500/30 hover:border-red-400 px-3 py-1.5 rounded-lg transition-all shrink-0"
-          >
-            <FontAwesomeIcon icon={faRotateRight} className="text-xs" />
-            Retry
-          </button>
-        </div>
-      )}
 
       <div className="flex flex-col md:flex-row gap-10 items-start mt-12">
         {/* Year Sidebar */}
@@ -656,15 +620,7 @@ const PlacementStats = () => {
                     key={item.id}
                     role="listitem"
                     className="transform transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
-                    onClick={() =>
-                      /*
-                       * Previously navigated to /company/:company_id.
-                       * For a "Placement Experiences" list the primary action is
-                       * reading the interview story, so we go to /experience/:id.
-                       * Put "View Company" as a secondary link inside the card itself.
-                       */
-                      navigate(`/experience/${item.id}`)
-                    }
+                    onClick={() => navigate("/discussion")}
                   >
                     <ExperienceCard {...item} />
                   </div>

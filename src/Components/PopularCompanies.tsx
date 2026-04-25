@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import CompanyCard from "./CompanyCard";
@@ -14,7 +15,10 @@ interface Company {
 // Card width (200px) + gap (16px from gap-4)
 const CARD_WIDTH = 216;
 
+
 const PopularCompanies = () => {
+  const navigate = useNavigate();
+
   // offsetX is the rendered left-shift in pixels, managed via state.
   const offsetRef = useRef(0);
   const [offsetX, setOffsetX] = useState(0);
@@ -35,7 +39,7 @@ const PopularCompanies = () => {
   };
 
   // 3 copies so there is always a full screen of cards available on both sides
-  const displayCompanies = useState([]);
+  const displayCompanies = [];
 
 
 
@@ -58,7 +62,10 @@ const PopularCompanies = () => {
           >
             {displayCompanies.map((company, index) => (
               <div key={`${company.id}-${index}`} className="flex-shrink-0">
-                <CompanyCard {...company} />
+                <CompanyCard
+                  {...company}
+                  onClick={() => navigate(`/company/${company.id}`)}
+                />
               </div>
             ))}
           </div>

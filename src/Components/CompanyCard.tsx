@@ -7,16 +7,20 @@ interface CompanyCardProps {
   experiences: number;
   type: "Product Based" | "Service Based";
   logo: string;
+  onClick?: () => void;
 }
 
-const CompanyCard = ({ name, experiences, type, logo }: CompanyCardProps) => {
+const CompanyCard = ({ name, experiences, type, logo, onClick }: CompanyCardProps) => {
   const isProductBased = type === "Product Based";
   const typeStyles = isProductBased
     ? "bg-[#ff7b00]/15 text-[#ff7b00] border-[#ff7b00]/20"
     : "bg-[#a855f7]/15 text-[#a855f7] border-[#a855f7]/20";
 
   return (
-    <div className="group min-w-[200px] bg-[#1e1e1e] p-5 rounded-2xl border border-[#2a2a2a] text-center transition-all duration-300 snap-start hover:border-[#00e5ff] hover:shadow-[0_12px_24px_rgba(0,229,255,0.15)] hover:-translate-y-1 cursor-pointer flex flex-col items-center">
+    <div
+      onClick={onClick}
+      className="group min-w-[200px] bg-[#1e1e1e] p-5 rounded-2xl border border-[#2a2a2a] text-center transition-all duration-300 snap-start hover:border-[#00e5ff] hover:shadow-[0_12px_24px_rgba(0,229,255,0.15)] hover:-translate-y-1 cursor-pointer flex flex-col items-center"
+    >
 
       {/* Logo Container */}
       <div className="w-[55px] h-[55px] bg-[#2a2a2a] rounded-xl mb-4 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-[#333] group-hover:shadow-md border border-white/5 overflow-hidden relative">
