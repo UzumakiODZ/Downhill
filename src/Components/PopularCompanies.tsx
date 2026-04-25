@@ -11,13 +11,6 @@ interface Company {
   logo: string;
 }
 
-const baseCompanies: Company[] = [
-  { id: 1, name: "Amazon",    experiences: 51, type: "Product Based", logo: "https://logo.clearbit.com/amazon.com"    },
-  { id: 2, name: "Microsoft", experiences: 30, type: "Product Based", logo: "https://logo.clearbit.com/microsoft.com" },
-  { id: 3, name: "Google",    experiences: 21, type: "Product Based", logo: "https://logo.clearbit.com/google.com"    },
-  { id: 4, name: "Uber",      experiences: 11, type: "Product Based", logo: "https://logo.clearbit.com/uber.com"      },
-];
-
 // Card width (200px) + gap (16px from gap-4)
 const CARD_WIDTH = 216;
 
@@ -42,7 +35,12 @@ const PopularCompanies = () => {
   };
 
   // 3 copies so there is always a full screen of cards available on both sides
-  const displayCompanies = [...baseCompanies, ...baseCompanies, ...baseCompanies];
+  const displayCompanies = useState([]);
+
+
+
+
+
 
   return (
     <div className="mb-[60px]">
