@@ -13,7 +13,7 @@ createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<App />} />
+          <Route index element={<PlacementStats />} />
           {/* <Route path="discussion" element={<Discussion />} /> */}// Temporarily disabled until we have more content to show here
           <Route path="company/:id" element={<CompanyPage />} />
           <Route path="placement-stats" element={<PlacementStats />} />
