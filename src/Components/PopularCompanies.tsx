@@ -47,7 +47,7 @@ const PopularCompanies = () => {
       <h2 className="text-2xl font-semibold mb-6 text-white">Popular Companies</h2>
 
       <div className="relative group w-full">
-        <div className="overflow-visible rounded-xl">
+        <div className="overflow-hidden rounded-xl">
           <div
             className="flex gap-4"
             style={{
