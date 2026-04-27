@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useQuery} from '@apollo/client/react';
@@ -32,7 +32,55 @@ const GET_POPULAR_COMPANIES = gql`
 // Card width (200px) + gap (16px from gap-4)
 const CARD_WIDTH = 216;
 
+const baseCompanies: Company[] = [
+  {
+    id: 1,
+    name: "Google",
+    experiences: 234,
+    type: "Product Based",
+    logo: "https://via.placeholder.com/200x100?text=Google",
+  },
+  {
+    id: 2,
+    name: "Amazon",
+    experiences: 189,
+    type: "Product Based",
+    logo: "https://via.placeholder.com/200x100?text=Amazon",
+  },
+  {
+    id: 3,
+    name: "Microsoft",
+    experiences: 176,
+    type: "Product Based",
+    logo: "https://via.placeholder.com/200x100?text=Microsoft",
+  },
+  {
+    id: 4,
+    name: "Apple",
+    experiences: 145,
+    type: "Product Based",
+    logo: "https://via.placeholder.com/200x100?text=Apple",
+  },
+  {
+    id: 5,
+    name: "Meta",
+    experiences: 128,
+    type: "Product Based",
+    logo: "https://via.placeholder.com/200x100?text=Meta",
+  },
+  {
+    id: 6,
+    name: "Accenture",
+    experiences: 156,
+    type: "Service Based",
+    logo: "https://via.placeholder.com/200x100?text=Accenture",
+  },
+];
+
+
 const PopularCompanies = () => {
+  const navigate = useNavigate();
+
   // offsetX is the rendered left-shift in pixels, managed via state.
   const offsetRef = useRef(0);
   const [offsetX, setOffsetX] = useState(0);
@@ -53,29 +101,12 @@ const PopularCompanies = () => {
   };
 
   // 3 copies so there is always a full screen of cards available on both sides
-  const { error, data } = useQuery<GetAllCompaniesQuery>(GET_POPULAR_COMPANIES);
+  const displayCompanies = useState([]);
 
-  const companies = useMemo<Company[]>(() => {
-    return (data?.getAllCompanies ?? []).map((company, index) => ({
-      id: index + 1,
-      name: company.companyName,
-      experiences: 0,
-      type: "Product Based",
-      logo: `https://cdn.brandfetch.io/domain/${company.companyName
-        .toLowerCase()
-        .replaceAll(" ", "")}.com?c=1idXrkCOm2apK0Oc-hO`,
-    }));
-  }, [data]);
 
-  const displayCompanies = useMemo<Company[]>(() => {
-    return [...companies, ...companies, ...companies];
-  }, [companies]);
 
-  useEffect(() => {
-    if (error) {
-      console.error("Error fetching companies:", error);
-    }
-  }, [error]);
+
+
 
   return (
     <div className="mb-[60px]">
@@ -93,7 +124,10 @@ const PopularCompanies = () => {
           >
             {displayCompanies.map((company, index) => (
               <div key={`${company.id}-${index}`} className="flex-shrink-0">
-                <CompanyCard {...company} />
+                <CompanyCard
+                  {...company}
+                  onClick={() => navigate(`/company/${company.id}`)}
+                />
               </div>
             ))}
           </div>
