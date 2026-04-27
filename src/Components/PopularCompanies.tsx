@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useQuery} from '@apollo/client/react';
@@ -14,6 +15,7 @@ interface Company {
 }
 
 interface ApiCompany {
+  id: number;
   companyName: string;
 }
 
@@ -24,58 +26,18 @@ interface GetAllCompaniesQuery {
 const GET_POPULAR_COMPANIES = gql`
   query {
     getAllCompanies {
+      id
       companyName
     }
   }
 `;
 
+
+
 // Card width (200px) + gap (16px from gap-4)
 const CARD_WIDTH = 216;
 
-const baseCompanies: Company[] = [
-  {
-    id: 1,
-    name: "Google",
-    experiences: 234,
-    type: "Product Based",
-    logo: "https://via.placeholder.com/200x100?text=Google",
-  },
-  {
-    id: 2,
-    name: "Amazon",
-    experiences: 189,
-    type: "Product Based",
-    logo: "https://via.placeholder.com/200x100?text=Amazon",
-  },
-  {
-    id: 3,
-    name: "Microsoft",
-    experiences: 176,
-    type: "Product Based",
-    logo: "https://via.placeholder.com/200x100?text=Microsoft",
-  },
-  {
-    id: 4,
-    name: "Apple",
-    experiences: 145,
-    type: "Product Based",
-    logo: "https://via.placeholder.com/200x100?text=Apple",
-  },
-  {
-    id: 5,
-    name: "Meta",
-    experiences: 128,
-    type: "Product Based",
-    logo: "https://via.placeholder.com/200x100?text=Meta",
-  },
-  {
-    id: 6,
-    name: "Accenture",
-    experiences: 156,
-    type: "Service Based",
-    logo: "https://via.placeholder.com/200x100?text=Accenture",
-  },
-];
+
 
 
 const PopularCompanies = () => {
@@ -100,8 +62,23 @@ const PopularCompanies = () => {
     setOffsetX(offsetRef.current);
   };
 
-  // 3 copies so there is always a full screen of cards available on both sides
-  const displayCompanies = useState([]);
+  const { data } = useQuery<GetAllCompaniesQuery>(GET_POPULAR_COMPANIES);
+
+  const companies = useMemo<Company[]>(() => {
+    return (data?.getAllCompanies ?? []).map((company, index) => ({
+      id: company.id,
+      name: company.companyName,
+      experiences: 0,
+      type: "Product Based",
+      logo: `https://cdn.brandfetch.io/domain/${company.companyName
+        .toLowerCase()
+        .replaceAll(" ", "")}.com?c=${import.meta.env.VITE_IMAGE_URL}`,
+    }));
+  }, [data]);
+
+  const displayCompanies = useMemo<Company[]>(() => {
+    return [...companies, ...companies, ...companies];
+  }, [companies]);
 
 
 
