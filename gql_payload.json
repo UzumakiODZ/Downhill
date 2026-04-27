@@ -1,0 +1,6 @@
+{
+    "query":  "query Test($companyId: ID!){ getRolesByCompany(companyId:$companyId){ id role_name year offer_type cgpa ctc base hired converted company_id } getQuestionsByCompany(companyId:$companyId){ id question years company_id } getAllPosts { id title content username created_at company_id } getAllCompanies { companyName } }",
+    "variables":  {
+                      "companyId":  "1"
+                  }
+}

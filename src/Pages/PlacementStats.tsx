@@ -17,13 +17,13 @@ import PopularCompanies from "../Components/PopularCompanies";
 
 // ─── API base ─────────────────────────────────────────────────────────────────
 /*
- * Previously hardcoded to "https://your-api.com" which 404s everywhere.
- * All environments must set VITE_API_BASE_URL.
+ * In local dev, default to /api so Vite proxy handles CORS.
+ * In hosted environments, VITE_API_BASE_URL can point directly to the backend.
  */
-const API_BASE = import.meta.env.VITE_API_BASE_URL as string;
+const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "/api";
 
-if (!API_BASE) {
-  console.error("[PlacementStats] VITE_API_BASE_URL is not set. All API calls will fail.");
+if (!import.meta.env.VITE_API_BASE_URL) {
+  console.warn("[PlacementStats] VITE_API_BASE_URL is not set. Using /api (Vite proxy expected in local dev).");
 }
 
 const LIMIT = 10;

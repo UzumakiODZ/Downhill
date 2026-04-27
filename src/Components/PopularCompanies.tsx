@@ -1,6 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { useQuery} from '@apollo/client/react';
+import { gql } from '@apollo/client';
 import CompanyCard from "./CompanyCard";
 
 interface Company {
@@ -10,6 +12,22 @@ interface Company {
   type: "Product Based" | "Service Based";
   logo: string;
 }
+
+interface ApiCompany {
+  companyName: string;
+}
+
+interface GetAllCompaniesQuery {
+  getAllCompanies: ApiCompany[];
+}
+
+const GET_POPULAR_COMPANIES = gql`
+  query {
+    getAllCompanies {
+      companyName
+    }
+  }
+`;
 
 // Card width (200px) + gap (16px from gap-4)
 const CARD_WIDTH = 216;
@@ -21,7 +39,7 @@ const PopularCompanies = () => {
 
   // Total width of ONE copy of the list; we wrap at this boundary so the
   // 3-copy array always gives us a card on screen both sides of the seam.
-  const totalSingleWidth = baseCompanies.length * CARD_WIDTH;
+  const totalSingleWidth = 5 ; // 5 cards per copy
 
 
 
@@ -35,12 +53,29 @@ const PopularCompanies = () => {
   };
 
   // 3 copies so there is always a full screen of cards available on both sides
-  const displayCompanies = useState([]);
+  const { error, data } = useQuery<GetAllCompaniesQuery>(GET_POPULAR_COMPANIES);
 
+  const companies = useMemo<Company[]>(() => {
+    return (data?.getAllCompanies ?? []).map((company, index) => ({
+      id: index + 1,
+      name: company.companyName,
+      experiences: 0,
+      type: "Product Based",
+      logo: `https://cdn.brandfetch.io/domain/${company.companyName
+        .toLowerCase()
+        .replaceAll(" ", "")}.com?c=1idXrkCOm2apK0Oc-hO`,
+    }));
+  }, [data]);
 
+  const displayCompanies = useMemo<Company[]>(() => {
+    return [...companies, ...companies, ...companies];
+  }, [companies]);
 
-
-
+  useEffect(() => {
+    if (error) {
+      console.error("Error fetching companies:", error);
+    }
+  }, [error]);
 
   return (
     <div className="mb-[60px]">

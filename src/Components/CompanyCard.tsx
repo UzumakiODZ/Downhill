@@ -40,7 +40,7 @@ const CompanyCard = ({ name, experiences, type, logo }: CompanyCardProps) => {
           className="hidden w-full h-full items-center justify-center text-xl font-bold text-[#00e5ff] bg-[#00e5ff]/10 select-none"
           aria-hidden="true"
         >
-          {name.charAt(0).toUpperCase()}
+          {name}
         </span>
       </div>
 
