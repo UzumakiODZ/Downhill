@@ -1,4 +1,8 @@
 @import "tailwindcss";
+#root {
+  overflow-x: hidden;
+  width: 100%;
+}
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;    

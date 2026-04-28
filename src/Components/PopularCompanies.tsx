@@ -1,9 +1,9 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { useQuery} from '@apollo/client/react';
-import { gql } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
+import { gql } from "@apollo/client";
 import CompanyCard from "./CompanyCard";
 
 interface Company {
@@ -32,39 +32,16 @@ const GET_POPULAR_COMPANIES = gql`
   }
 `;
 
-
-
-// Card width (200px) + gap (16px from gap-4)
 const CARD_WIDTH = 216;
-
-
-
 
 const PopularCompanies = () => {
   const navigate = useNavigate();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<number | null>(null);
 
-  // offsetX is the rendered left-shift in pixels, managed via state.
-  const offsetRef = useRef(0);
-  const [offsetX, setOffsetX] = useState(0);
+  const { data, loading } = useQuery<GetAllCompaniesQuery>(GET_POPULAR_COMPANIES);
 
-  // Total width of ONE copy of the list; we wrap at this boundary so the
-  // 3-copy array always gives us a card on screen both sides of the seam.
-  const totalSingleWidth = 5 ; // 5 cards per copy
-
-
-
-  const handleArrow = (direction: "left" | "right") => {
-    const delta = direction === "right" ? CARD_WIDTH : -CARD_WIDTH;
-    offsetRef.current += delta;
-    // Keep within [0, totalSingleWidth) to maintain seamless loop invariant
-    if (offsetRef.current < 0) offsetRef.current += totalSingleWidth;
-    if (offsetRef.current >= totalSingleWidth) offsetRef.current -= totalSingleWidth;
-    setOffsetX(offsetRef.current);
-  };
-
-  const { data } = useQuery<GetAllCompaniesQuery>(GET_POPULAR_COMPANIES);
-
-  const companies = useMemo<Company[]>(() => {
+ const companies = useMemo<Company[]>(() => {
     return (data?.getAllCompanies ?? []).map((company) => ({
       id: company.id,
       name: company.companyName,
@@ -76,53 +53,99 @@ const PopularCompanies = () => {
     }));
   }, [data]);
 
-  const displayCompanies = useMemo<Company[]>(() => {
-    return [...companies, ...companies, ...companies];
+  const scroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+
+    const amount = direction === "right" ? CARD_WIDTH : -CARD_WIDTH;
+
+    scrollRef.current.scrollBy({
+      left: amount,
+      behavior: "smooth",
+    });
+  };
+
+  // Auto scroll
+  useEffect(() => {
+    if (!scrollRef.current || companies.length === 0) return;
+
+    const el = scrollRef.current;
+
+    const startAutoScroll = () => {
+      intervalRef.current = window.setInterval(() => {
+        if (!el) return;
+
+        const maxScroll = el.scrollWidth - el.clientWidth;
+
+        if (el.scrollLeft + CARD_WIDTH >= maxScroll) {
+          el.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          el.scrollBy({ left: CARD_WIDTH, behavior: "smooth" });
+        }
+      }, 2500);
+    };
+
+    const stopAutoScroll = () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+
+    startAutoScroll();
+
+    el.addEventListener("mouseenter", stopAutoScroll);
+    el.addEventListener("mouseleave", startAutoScroll);
+
+    return () => {
+      stopAutoScroll();
+      el.removeEventListener("mouseenter", stopAutoScroll);
+      el.removeEventListener("mouseleave", startAutoScroll);
+    };
   }, [companies]);
 
-
-
-
-
+  if (loading) {
+    return <p className="text-white">Loading...</p>;
+  }
 
   return (
     <div className="mb-[60px]">
-      <h2 className="text-2xl font-semibold mb-6 text-white">Popular Companies</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-white">
+        Popular Companies
+      </h2>
 
-      <div className="relative group w-full">
-        <div className="overflow-hidden rounded-xl">
-          <div
-            className="flex gap-4"
-            style={{
-              transform: `translateX(-${offsetX}px)`,
-              willChange: "transform",
-              transition: "transform 0.3s ease-out",
-            }}
-          >
-            {displayCompanies.map((company) => (
-              <div key={`${company.id}`} className="flex-shrink-0">
-                <CompanyCard
-                  {...company}
-                  onClick={() => navigate(`/company/${company.id}`)}
-                />
-              </div>
-            ))}
-          </div>
+      <div className="flex items-center gap-4">
+
+        {/* Left Button */}
+        <button
+          onClick={() => scroll("left")}
+          className="cursor-pointer hidden md:flex shrink-0 bg-[#00e5ff]/20 hover:bg-[#00e5ff]/40 text-[#00e5ff] w-10 h-10 items-center justify-center rounded-full border border-[#00e5ff]/30"
+        >
+          <FontAwesomeIcon icon={faChevronLeft} />
+        </button>
+
+        {/* Scroll Container */}
+        <div
+          ref={scrollRef}
+          className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar"
+        >
+          {companies.map((company) => (
+            <div
+              key={company.id}
+              className="flex-shrink-0 w-[200px] snap-start"
+            >
+              <CompanyCard
+                {...company}
+                onClick={() => navigate(`/company/${company.id}`)}
+              />
+            </div>
+          ))}
         </div>
+
+        {/* Right Button */}
         <button
-          onClick={() => handleArrow("left")}
-          aria-label="Scroll left"
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-40 bg-[#00e5ff]/20 hover:bg-[#00e5ff]/40 text-[#00e5ff] p-3 rounded-full transition-all duration-200 backdrop-blur-sm border border-[#00e5ff]/30 opacity-0 group-hover:opacity-100 focus:opacity-100"
+          onClick={() => scroll("right")}
+          className="cursor-pointer hidden md:flex shrink-0 bg-[#00e5ff]/20 hover:bg-[#00e5ff]/40 text-[#00e5ff] w-10 h-10 items-center justify-center rounded-full border border-[#00e5ff]/30"
         >
-          <FontAwesomeIcon icon={faChevronLeft} className="text-lg" />
+          <FontAwesomeIcon icon={faChevronRight} />
         </button>
-        <button
-          onClick={() => handleArrow("right")}
-          aria-label="Scroll right"
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-40 bg-[#00e5ff]/20 hover:bg-[#00e5ff]/40 text-[#00e5ff] p-3 rounded-full transition-all duration-200 backdrop-blur-sm border border-[#00e5ff]/30 opacity-0 group-hover:opacity-100 focus:opacity-100"
-        >
-          <FontAwesomeIcon icon={faChevronRight} className="text-lg" />
-        </button>
+
       </div>
     </div>
   );

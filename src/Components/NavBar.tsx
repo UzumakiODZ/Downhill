@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,14 +12,7 @@ import { useTextMeasure, truncateIfNeeded } from "../hooks/useTextMeasure";
 
 const NavBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const navLinks = [
     { to: "/", label: "Home", icon: faHouse },
@@ -55,11 +48,10 @@ const NavBar = () => {
 
   return (
     <nav 
-      className={`sticky top-0 left-0 w-full z-[100] transition-all duration-500 ${
-        scrolled 
-          ? "bg-[#121212]/80 backdrop-blur-xl py-4 shadow-2xl border-b border-white/5" 
-          : "bg-[#121212] py-6 border-b border-transparent"
-      }`}
+      className={`sticky top-0 left-0 w-full z-[100]
+
+          bg-[#121212] py-6 border-b border-transparent`
+      }
     >
       <div className="max-w-8xl mx-auto px-6 md:px-[60px] flex justify-between items-center">
         
