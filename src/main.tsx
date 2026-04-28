@@ -5,8 +5,6 @@ import { ApolloProvider } from "@apollo/client/react";
 import "./index.css";
 
 import Layout from "./Components/Layout";
-import App from "./Pages/App";
-import Discussion from "./Pages/Discussion";
 import PlacementStats from "./Pages/PlacementStats";
 import CompanyPage from "./Pages/CompanyPage";
 import Client from "./utils/apolloClient";

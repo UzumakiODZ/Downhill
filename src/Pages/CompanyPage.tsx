@@ -1,10 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useMemo, useState } from "react";
-import CompanyHeader from "../Components/company/CompanyHeader";
 import CompanyTabs from "../Components/company/CompanyTabs";
 import RolesSection from "../Components/company/RolesSection";
 import PostsSection from "../Components/company/PostsSection";
-import QuestionsSection from "../Components/company/QuestionsSection";
 import CompanyHeaderSkeleton from "../Components/skeleton/CompanyHeaderSkeleton";
 import SectionSkeleton from "../Components/skeleton/SectionSkeleton";
 import { useQuery } from '@apollo/client/react';
@@ -46,7 +44,7 @@ interface CompanyName {
 }
 
 interface CompanyPageQuery {
-  getAllCompanies: CompanyName[];
+  getComapanyByID: CompanyName;
   roles: ApiRole[];
   questions: ApiQuestion[];
   posts: ApiPost[];
@@ -54,7 +52,7 @@ interface CompanyPageQuery {
 
 const GET_COMPANY_PAGE_DATA = gql`
   query CompanyPageData($companyId: ID!) {
-    getAllCompanies {
+    getCompanyByID(companyId: $companyId){
       companyName
     }
     roles: getRolesByCompany(companyId: $companyId) {
@@ -112,7 +110,7 @@ interface Post {
 }
 
 interface Question {
-  id: number;
+  id: string;
   question: string;
   years: string;
   company_id: number;
@@ -136,30 +134,30 @@ export default function CompanyPage() {
     variables: { companyId: String(companyId) },
   });
 
-  const company = useMemo<CompanyData | null>(() => {
+  const comp = useMemo<CompanyData | null>(() => {
     if (!data) {
       return null;
     }
 
     const companyName =
-      data.getAllCompanies?.[Math.max(companyId - 1, 0)]?.companyName ?? `Company ${companyId}`;
+      data.getComapanyByID?.companyName ?? `Company ${companyId}`;
 
     return {
       id: companyId,
       company_name: companyName,
       roles: (data.roles ?? []).map((role) => ({
-        id: role.id,
-        role_name: role.roleName,
-        year: role.year,
-        offer_type: role.offerType,
-        cgpa: role.cgpa,
-        ctc: role.ctc,
-        base: role.base,
-        hired: role.hired,
-        converted: role.converted,
-        company_id: role.companyId,
-      })),
-      posts: (data.posts ?? []).map((post) => ({
+      id: role.id,
+      role_name: role.roleName,
+      year: role.year,
+      offer_type: role.offerType,
+      cgpa: role.cgpa,
+      ctc: role.ctc,
+      base: role.base,
+      hired: role.hired,
+      converted: role.converted,
+      company_id: role.companyId,
+    })),
+      posts: (data.posts ?? []).map((post: { id: any; title: any; content: any; user: { username: any; }; userId: any; createdAt: any; }) => ({
         id: post.id,
         title: post.title,
         content: post.content,
@@ -167,7 +165,7 @@ export default function CompanyPage() {
         created_at: post.createdAt,
         company_id: companyId,
       })),
-      questions: (data.questions ?? []).map((question) => ({
+      questions: (data.questions ?? []).map((question: { id: any; question: any; years: any; companyId: any; }) => ({
         id: question.id,
         question: question.question,
         years: question.years,
@@ -188,9 +186,8 @@ export default function CompanyPage() {
   } else {
     tabContent = (
       <>
-        {activeTab === "roles" && company && <RolesSection roles={company.roles} />}
-        {activeTab === "posts" && company && <PostsSection posts={company.posts} />}
-        {activeTab === "questions" && company && <QuestionsSection questions={company.questions} />}
+        {activeTab === "roles" && comp && <RolesSection roles={comp.roles} />}
+        {activeTab === "posts" && comp && <PostsSection posts={comp.posts} />}
       </>
     );
   }
@@ -200,10 +197,10 @@ export default function CompanyPage() {
     <div className="min-h-screen bg-[#121212] text-white py-8 px-4 md:px-10">
       <div className="max-w-7xl mx-auto">
         {/* Company Header */}
-        {loading || !company ? (
+        {loading || !companyId ? (
           <CompanyHeaderSkeleton />
         ) : (
-          <CompanyHeader company={company} />
+          <></>
         )}
 
         {/* Tabs Navigation */}

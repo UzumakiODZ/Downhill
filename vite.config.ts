@@ -7,22 +7,6 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  server: {
-    proxy: {
-      '/api': {
-        target: 'https://downhill-gqll-api.onrender.com',
-        changeOrigin: true,
-        secure: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-      '/graphql': {
-        target: 'https://downhill-gqll-api.onrender.com',
-        changeOrigin: true,
-        secure: true,
-        rewrite: () => '/query',
-      },
-    },
-  },
   optimizeDeps: {
     include: ['@apollo/client']
   }

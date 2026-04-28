@@ -65,7 +65,7 @@ const PopularCompanies = () => {
   const { data } = useQuery<GetAllCompaniesQuery>(GET_POPULAR_COMPANIES);
 
   const companies = useMemo<Company[]>(() => {
-    return (data?.getAllCompanies ?? []).map((company, index) => ({
+    return (data?.getAllCompanies ?? []).map((company) => ({
       id: company.id,
       name: company.companyName,
       experiences: 0,
@@ -99,8 +99,8 @@ const PopularCompanies = () => {
               transition: "transform 0.3s ease-out",
             }}
           >
-            {displayCompanies.map((company, index) => (
-              <div key={`${company.id}-${index}`} className="flex-shrink-0">
+            {displayCompanies.map((company) => (
+              <div key={`${company.id}`} className="flex-shrink-0">
                 <CompanyCard
                   {...company}
                   onClick={() => navigate(`/company/${company.id}`)}

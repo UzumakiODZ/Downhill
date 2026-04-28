@@ -1,5 +1,3 @@
-import React from 'react'
-
 const App = () => {
   return (
     <div className="min-h-screen bg-[#121212] text-white font-[Poppins] flex flex-col items-center justify-center text-center px-4">
