@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ApolloProvider } from "@apollo/client/react";
-import "./index.css";
+import "./style.css";
 
 import Layout from "./Components/Layout";
 import PlacementStats from "./Pages/PlacementStats";

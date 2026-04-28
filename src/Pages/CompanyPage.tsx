@@ -157,7 +157,7 @@ export default function CompanyPage() {
       converted: role.converted,
       company_id: role.companyId,
     })),
-      posts: (data.posts ?? []).map((post: ApiPost) => ({
+      posts: (data.posts ?? []).map((post: { id: any; title: any; content: any; user: { username: any; }; userId: any; createdAt: any; }) => ({
         id: post.id,
         title: post.title,
         content: post.content,
@@ -165,7 +165,7 @@ export default function CompanyPage() {
         created_at: post.createdAt,
         company_id: companyId,
       })),
-      questions: (data.questions ?? []).map((question: ApiQuestion) => ({
+      questions: (data.questions ?? []).map((question: { id: any; question: any; years: any; companyId: any; }) => ({
         id: question.id,
         question: question.question,
         years: question.years,
